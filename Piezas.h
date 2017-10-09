@@ -45,7 +45,9 @@ class Piezas
      * same size as previously specified
     **/
   	void reset();
-
+    
+    Piece check();
+    
   	/**
   	 * Places a piece of the current turn on the board, returns what
   	 * piece is placed, and toggles which Piece's turn it is. dropPiece does 
@@ -72,6 +74,8 @@ class Piezas
      * line, it is a tie.
     **/
   	Piece gameState();
+  	
+  	void printBoard();
 };
 
 #endif /*_PIEZAS_H_*/

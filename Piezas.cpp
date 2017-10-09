@@ -1,5 +1,7 @@
 #include "Piezas.h"
 #include <vector>
+ #include<iostream>
+ using namespace std;
 /** CLASS Piezas
  * Class for representing a Piezas vertical board, which is roughly based
  * on the game "Connect Four" where pieces are placed in a column and 
@@ -22,6 +24,18 @@
 **/
 Piezas::Piezas()
 {
+    std::vector<Piece> tmp;
+    for(int i = 0; i < BOARD_ROWS; i++)
+    {
+        for(int k = 0; k < BOARD_COLS; k++)
+        {
+            tmp.push_back(Blank);
+        }
+        board.push_back(tmp);
+        tmp.clear();
+    }
+    turn = X;
+    
 }
 
 /**
@@ -30,6 +44,19 @@ Piezas::Piezas()
 **/
 void Piezas::reset()
 {
+    for(int i = 0; i < BOARD_ROWS; i++)
+    {
+        for(int k = 0; k < BOARD_COLS; k++)
+        {
+            board[i][k] = Blank;
+        }
+    }
+    turn = X;
+}
+
+Piece Piezas::check()
+{
+    return O;   
 }
 
 /**
@@ -42,7 +69,30 @@ void Piezas::reset()
 **/ 
 Piece Piezas::dropPiece(int column)
 {
-    return Blank;
+    Piece p = Blank;
+    if(column >= 0 && column < BOARD_COLS){
+        int i = 0;
+        while(i < BOARD_ROWS){
+            //cout<<i<<endl;
+            if(board[i][column] == Blank)
+            {
+                board[i][column] = turn;
+                p = board[i][column];
+                i =  5;
+            }
+             i++;
+        } 
+    }else {
+        p = Invalid ;
+    }
+    
+    if(turn == X){
+        turn = O;   
+    } else {
+        turn = X;   
+    }
+    
+    return p;
 }
 
 /**
@@ -51,7 +101,11 @@ Piece Piezas::dropPiece(int column)
 **/
 Piece Piezas::pieceAt(int row, int column)
 {
-    return Blank;
+    if(row < 0 || row > BOARD_ROWS || column < 0 || column > BOARD_COLS){
+        return Invalid;   
+    } else {
+        return   board[row][column];
+    }
 }
 
 /**
@@ -65,5 +119,101 @@ Piece Piezas::pieceAt(int row, int column)
 **/
 Piece Piezas::gameState()
 {
-    return Blank;
+    for(int i = 0; i < BOARD_ROWS; i++){
+        for(int k = 0; k < BOARD_COLS;k++){
+            if(board[i][k] == Blank){
+                return Invalid;
+            }
+        }
+    }
+    
+    Piece lastPiece = Blank;
+    int xScore = 0;
+    int oScore = 0;
+    int highX = 0;
+    int highO = 0;
+    
+    for(int i = 0; i < BOARD_ROWS; i++)
+    {
+        for(int k = 0; k < BOARD_COLS; k++)
+        {
+            if(board[i][k] == lastPiece){
+                if(board[i][k] == X){
+                    oScore = 1;
+                    xScore++;
+                    if(xScore > highX){
+                        highX = xScore; 
+                        
+                    }
+                } else {
+                    xScore = 1;
+                    oScore++; 
+                    if(oScore > highO){
+                        highO = oScore;
+                        
+                    }
+                }
+            }else {
+                oScore = 1;
+                xScore = 1;
+            }
+            lastPiece = board[i][k];
+        }
+        
+        lastPiece = Blank;
+    }
+    //out<<highX<<endl;
+    //cout<<highO<<endl;
+    oScore = 0;
+    xScore = 0;
+    
+    for(int k = 0; k < BOARD_COLS; k++)
+    {
+        for(int i = 0; i < BOARD_ROWS; i++)
+        {
+            if(board[i][k] == lastPiece){
+                if(board[i][k] == X){
+                    xScore++;
+                    oScore = 1;
+                    if(xScore > highX){
+                        highX = xScore;   
+                    }
+                } else {
+                    oScore++; 
+                    xScore = 1;
+                    if(oScore > highO){
+                        highO = oScore;
+                    }
+                }
+            } else {
+                oScore = 1;
+                xScore = 1;
+            }
+            lastPiece = board[i][k];
+        }
+        lastPiece = Blank;
+    }
+    
+   // cout<<"x score = "<<highX<<endl;
+   // cout<<"o score = "<<highO<<endl;
+    //printBoard();
+    if(highX > highO){
+        return X;
+    } else if(highO > highX){
+        return O;
+    } else {
+        return Blank;
+    }
+}
+
+void Piezas::printBoard()
+{
+    for(int i = 0; i < BOARD_ROWS; i++)
+    {
+        for(int k = 0; k < BOARD_COLS; k++)
+        {
+            cout<<board[i][k]<<" ";
+        }
+        cout<<endl;
+    }
 }
